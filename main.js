@@ -1,65 +1,75 @@
-let inputs = document.querySelectorAll("input");
-let line = document.querySelector(".line");
-let emptyMessage = document.getElementById("empty");
-// change color of line,focus
-for (input of inputs) {
-    input.addEventListener("focus", (e) => {
-        line.style.backgroundColor = "#ff7300";
-    });
+let field0 = document.getElementById('field-0');
+let field1 = document.getElementById('field-1');
+let line = document.querySelector('.line');
+let emptyMessage = document.getElementById('empty');
+let field0InitialValue = '';
+let field1InitialValue = '';
 
-    input.addEventListener("blur", function() {
-        if (this.value === "") {
-            line.style.backgroundColor = "black";
-            emptyMessage.style.display = "block";
-        }
-    });
-
-    input.addEventListener("input", function() {
-        if (this.value !== "") {
-            line.style.backgroundColor = "#ff7300";
-            emptyMessage.style.display = "none";
-        } else {
-            line.style.backgroundColor = "red";
-            emptyMessage.style.display = "block";
-        }
-    });
+// Функція для перевірки, чи хоча б одне поле порожнє
+function isAnyFieldEmpty() {
+    return field0.value.trim() === '' || field1.value.trim() === '';
 }
 
-document.addEventListener("click", function(event) {
-    if (!event.target.closest(".down") && event.target.closest(".container")) {
-        line.style.backgroundColor = "black";
-        emptyMessage.style.display = "none";
-        inputs[0].focus();
+// Функція для перевірки, чи поля мали початкові значення і зараз порожні
+function areFieldsCleared() {
+    return (field0.value.trim() === '' && field0InitialValue !== '') || (field1.value.trim() === '' && field1InitialValue !== '');
+}
+
+// Зберігаємо початкові значення полів
+field0InitialValue = field0.value.trim();
+field1InitialValue = field1.value.trim();
+
+// Перевіряємо, чи поле порожнє після втрати фокуса
+field0.addEventListener('blur', function() {
+    if (this.value.trim() === '') {
+        emptyMessage.style.display = 'block';
+    } else {
+        emptyMessage.style.display = 'none';
+    }
+    line.style.background = isAnyFieldEmpty() ? 'red' : 'yellow';
+});
+
+field1.addEventListener('blur', function() {
+    if (this.value.trim() === '') {
+        emptyMessage.style.display = 'block';
+    } else {
+        emptyMessage.style.display = 'none';
+    }
+    line.style.background = isAnyFieldEmpty() ? 'red' : 'gray';
+});
+
+// Встановлюємо фокус на поле при кліку на компоненті
+document.querySelector('.container').addEventListener('click', function(event) {
+    if (event.target !== field0 && event.target !== field1) {
+        field0.focus();
     }
 });
 
-// Sets the size of the input field based on the number of characters in the entered text.
-function inputSize(){
-    let inputsSize = document.querySelectorAll('input');
-    inputsSize.forEach(input => {
-        input.addEventListener('input', resizeInput);
+// При загрузці сторінки, також встановлюємо початковий колір лінії
+document.addEventListener('DOMContentLoaded', function() {
+    line.style.background = 'gray';
+});
+
+// Функція для обмеження допустимих символів у введенні
+function restrictInput(inputElement) {
+    inputElement.addEventListener('input', function() {
+        const regex = /[^-?\d.]/g;
+        this.value = this.value.replace(regex, '');
+
+        if (this.value === '') {
+            this.setAttribute('size', 1);
+        } else {
+            this.setAttribute('size', this.value.length);
+        }
+        adjustInputWidth();
+        line.style.background = isAnyFieldEmpty() ? 'red' : 'yellow';
     });
 }
 
-// Automatically resizes the input field based on the number of characters in the text entered.
+restrictInput(field0);
+restrictInput(field1);
 
-function resizeInput(){
-    this.setAttribute('size', this.value.length);
-}
-// Called when text is entered in the input field, processes the input data and calls the adjustInputWidth() function to change the field width.
-function inputEventHandler() {
-    this.value = this.value.replace(/[^-?\d.]/g, '');
-    if (this.value === "") {
-        this.setAttribute('size', 1); // Встановлюємо початковий розмір поля, якщо воно порожнє
-    } else {
-        this.setAttribute('size', this.value.length); // Змінюємо розмір поля на основі кількості символів
-    }
-    adjustInputWidth();
-}
-
-
-// Changes the width of the input field based on the length of the text entered, but limits it to a maximum value of 200 pixels.
-
+// Остаточне налаштування розмірів поля
 function adjustInputWidth() {
     const inputElement = document.getElementById('field-0');
     inputElement.style.width = 'auto';
@@ -71,9 +81,9 @@ function adjustInputWidth() {
     }
 }
 
-// register inputEventHandler() event listeners for both input fields (field-0 and field-1) and call inputSize() functions
-document.getElementById('field-0').addEventListener('input', inputEventHandler);
-document.getElementById('field-1').addEventListener('input', inputEventHandler);
-
-inputSize();
-
+// Змінюємо колір лінії на сірий при кліку на будь-який елемент крім .container
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.container')) {
+        line.style.background = isAnyFieldEmpty() ? 'red' : 'gray';
+    }
+});
