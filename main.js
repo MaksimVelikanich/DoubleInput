@@ -5,21 +5,21 @@ let emptyMessage = document.getElementById('empty');
 let field0InitialValue = '';
 let field1InitialValue = '';
 
-// Функція для перевірки, чи хоча б одне поле порожнє
+// Function to check if at least one field is empty
 function isAnyFieldEmpty() {
     return field0.value.trim() === '' || field1.value.trim() === '';
 }
 
-// Функція для перевірки, чи поля мали початкові значення і зараз порожні
+// Function to check if fields had initial values and are now empty
 function areFieldsCleared() {
     return (field0.value.trim() === '' && field0InitialValue !== '') || (field1.value.trim() === '' && field1InitialValue !== '');
 }
 
-// Зберігаємо початкові значення полів
+// Save initial values of the fields
 field0InitialValue = field0.value.trim();
 field1InitialValue = field1.value.trim();
 
-// Перевіряємо, чи поле порожнє після втрати фокуса
+// Check if a field is empty after losing focus
 field0.addEventListener('blur', function() {
     if (this.value.trim() === '') {
         emptyMessage.style.display = 'block';
@@ -38,19 +38,19 @@ field1.addEventListener('blur', function() {
     line.style.background = isAnyFieldEmpty() ? 'red' : 'gray';
 });
 
-// Встановлюємо фокус на поле при кліку на компоненті
+// Set focus on the field when clicking on the component
 document.querySelector('.container').addEventListener('click', function(event) {
     if (event.target !== field0 && event.target !== field1) {
         field0.focus();
     }
 });
 
-// При загрузці сторінки, також встановлюємо початковий колір лінії
+// On page load, set the initial line color to gray
 document.addEventListener('DOMContentLoaded', function() {
     line.style.background = 'gray';
 });
 
-// Функція для обмеження допустимих символів у введенні
+// Function to restrict allowed characters in input
 function restrictInput(inputElement) {
     inputElement.addEventListener('input', function() {
         const regex = /[^-?\d.]/g;
@@ -69,7 +69,7 @@ function restrictInput(inputElement) {
 restrictInput(field0);
 restrictInput(field1);
 
-// Остаточне налаштування розмірів поля
+// Final adjustments to the input field's width
 function adjustInputWidth() {
     const inputElement = document.getElementById('field-0');
     inputElement.style.width = 'auto';
@@ -81,7 +81,7 @@ function adjustInputWidth() {
     }
 }
 
-// Змінюємо колір лінії на сірий при кліку на будь-який елемент крім .container
+// Change the line color to gray when clicking any element except .container
 document.addEventListener('click', function(event) {
     if (!event.target.closest('.container')) {
         line.style.background = isAnyFieldEmpty() ? 'red' : 'gray';
